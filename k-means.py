@@ -1,3 +1,9 @@
+from __future__ import division
+import sys
+from collections import defaultdict
+import random
+from pprint import pprint
+
 import input_output as io
 import numpy as np
 import math
@@ -7,63 +13,60 @@ class KMeans(object):
 	def __init__(self, numberOfClusters = 3):
 		self.numberOfClusters = numberOfClusters
 		self.max_iterations = 1000
-		self.data = io.read_file('iris.data')
-		self.centroids = self.__randomizeCentroids()
-		self.oldCentroids = [[] for i in range(self.numberOfClusters)]
+		self.data = self.__readData()
+		self.features = self.data.keys()
 
 	def run(self):
-		iterations = 0
-		print(self.__has_converged(iterations))
-		while not (self.__has_converged(iterations)):
-			iterations = iterations + 1
+		k = self.numberOfClusters
+		centroids = dict((c,[c]) for c in self.features[:k])
+		centroids[self.features[k-1]] += self.features[k:]
+		for i in xrange(self.max_iterations):
+		    new_centroids = self.__assignCentroids(centroids)
+		    new_centroids = self.__updateCentroids(new_centroids)
+		    if centroids == new_centroids:
+		        break
+		    else:
+		        centroids = new_centroids
+		self.__printResult(centroids)
 
-			clusters = [[] for i in range(self.numberOfClusters)]
+	def __assignCentroids(self, centroids):
+		new_centroids = defaultdict(list)
+		for cx in centroids:
+		    for x in centroids[cx]:
+		        best = min(centroids, key=lambda c: self.__calculateDistance(x,c))
+		        new_centroids[best] += [x]
+		return new_centroids
 
-		# assign data points to clusters
-		clusters = self.__calculateEuclideanDistance(clusters)
+	def __updateCentroids(self, centroids):
+		new_centroids = {}
+		for c in centroids:
+		    new_centroids[self.__mean(centroids[c])] = centroids[c]
+		return new_centroids
 
-		# recalculate centroids
-		index = 0
-		for cluster in clusters:
-			oldCentroids[index] = centroids[index]
-			centroids[index] = np.mean(cluster, axis=0).tolist()
-			index += 1
+	def __calculateDistance(self, feature1, feature2):
+		a = np.array
+		d = a(feature1)-a(feature2)
+		return np.sqrt(np.dot(d, d))
 
+	def __mean(self, features):
+	    return tuple(np.mean(features, axis=0))
 
-			print("The total number of data instances is: " + str(len(data)))
-			print("The total number of iterations necessary is: " + str(iterations))
-			print("The means of each cluster are: " + str(centroids))
-			print("The clusters are as follows:")
-			for cluster in clusters:
-				print("Cluster with a size of " + str(len(cluster)) + " starts here:")
-				print(np.array(cluster).tolist())
-				print("Cluster ends here.")
+	def __counter(self, alist):
+	    count = defaultdict(int)
+	    for x in alist:
+	        count[x] += 1
+	    return dict(count)
 
-				return
+	def __printResult(self, clusters):
+		for c in clusters:
+		    print self.__counter([self.data[x] for x in clusters[c]])
 
-	def __calculateEuclideanDistance(self, instance1, instance2, length):
-		distance = 0
-		for x in range(length):
-			distance += pow((instance1[x] - instance2[x]), 2)
-		return math.sqrt(distance)
-
-	def __randomizeCentroids(self):
-		centroids = []
-		for cluster in range(0, self.numberOfClusters):
-			centroids.append(self.data[np.random.randint(0, len(self.data))])
-		return centroids;
-
-	def __has_converged(self, iterations):
-		if iterations > self.max_iterations:
-			return True
-		return self.oldCentroids == self.centroids
+	def __readData(self):
+		data = [l.strip() for l in open('iris.data') if l.strip()]
+		features = [tuple(map(float, x.split(',')[:-1])) for x in data]
+		labels = [x.split(',')[-1] for x in data]
+		return dict(zip(features, labels))
 
 
-
-kmeans = KMeans()
-print("Printing centroids:")
-print(kmeans.centroids)
-print("Printing old centroids:")
-print(kmeans.oldCentroids)
-print("Running algorithm:")
-kmeans.run()
+if __name__ == "__main__":
+    KMeans().run()
