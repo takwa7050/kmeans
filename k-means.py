@@ -65,7 +65,5 @@ class KMeans(object):
 if __name__ == "__main__":
 	if len(sys.argv) == 2:
 		KMeans(int(sys.argv[1])).run()
-	elif len(sys.argv) == 3:
-		KMeans(int(sys.argv[1]), int(sys.argv[2])).run()
 	else:
 		KMeans().run()
