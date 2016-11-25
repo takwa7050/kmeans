@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 from collections import defaultdict
 
@@ -62,4 +63,9 @@ class KMeans(object):
 		    print self.__counter([self.data[x] for x in clusters[c]])
 
 if __name__ == "__main__":
-    KMeans().run()
+	if len(sys.argv) == 2:
+		KMeans(int(sys.argv[1])).run()
+	elif len(sys.argv) == 3:
+		KMeans(int(sys.argv[1]), int(sys.argv[2])).run()
+	else:
+		KMeans().run()
