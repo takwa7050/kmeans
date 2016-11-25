@@ -17,7 +17,7 @@ KMEANS ALGORITHM
 
 ### To change the number of clusters
 * Changing the number of clusters to K = 5
-* Type `python k-means.py 5`
+* Type `python k-means.py 5` (Added an argument '5' after the command)
 * Output:
 
     {'Iris-setosa': 17}
