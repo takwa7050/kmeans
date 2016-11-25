@@ -1,12 +1,5 @@
-from __future__ import division
-import sys
-from collections import defaultdict
-import random
-from pprint import pprint
-
-import input_output as io
 import numpy as np
-import math
+from collections import defaultdict
 
 class KMeans(object):
 
@@ -27,7 +20,7 @@ class KMeans(object):
 		        break
 		    else:
 		        centroids = newCentroids
-		
+
 		self.__printResult(centroids)
 
 	def __assignCentroids(self, centroids):
